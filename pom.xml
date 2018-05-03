@@ -10,6 +10,7 @@
   
 	<properties>
         <java.version>1.8</java.version>
+		<spring.version>5.0.4.RELEASE</spring.version>
     </properties>
   
 	<dependencies>
@@ -42,6 +43,18 @@
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
             <version>1.6.0</version>
+        </dependency>
+		
+		<!-- Spring core -->
+        <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
         </dependency>
 	</dependencies>
   

@@ -1,7 +1,5 @@
 package mx.com.core.utilidades;
 
-import mx.com.example.test.dto.entity.Empleado;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
