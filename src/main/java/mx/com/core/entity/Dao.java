@@ -1,10 +1,8 @@
 package mx.com.core.entity;
 
 import mx.com.core.db.Parameter;
-import mx.com.core.db.StoreProcedure;
 import mx.com.core.utilidades.ReflectionManager;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 
