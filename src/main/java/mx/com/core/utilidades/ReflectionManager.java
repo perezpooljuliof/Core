@@ -1,15 +1,58 @@
 package mx.com.core.utilidades;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ReflectionManager {
-    /*
+    public static ReflectionManager instance;
+
+    private ReflectionManager() {
+        instance = new ReflectionManager();
+    }
+
+    public ReflectionManager getInstance() {
+        return instance;
+    }
+
+
+
+    public static List<Field> getFields(Class clazz) {
+        List<Field> fields = new ArrayList<>();
+        while (clazz != Object.class) {
+            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+            clazz = clazz.getSuperclass();
+        }
+        return fields;
+    }
+
+    public static List<Field> getFields(Object object) {
+        Class clazz = object.getClass();
+        return getFields(clazz);
+    }
+
     public static Method getMethod(Object instance, String methodName, Class... parametersType) {
         Class classType = instance.getClass();
         return getMethod(classType, methodName, parametersType);
     }
-    /*/
+
+    public static Annotation[] getAnnotations(Object object) {
+        Class clazz = object.getClass();
+        return getAnnotations(clazz);
+    }
+
+    public static Annotation[] getAnnotations(Class clazz) {
+        Annotation[] annotations = clazz.getAnnotations();
+        return annotations;
+    }
+
+    public static Annotation getAnnotation(Class clazz, Class annotationClass) {
+        return clazz.getAnnotation(annotationClass);
+    }
 
     /**
      *
@@ -18,7 +61,6 @@ public class ReflectionManager {
      * @param parametersType
      * @return
      */
-    /*
     public static Method getMethod(Class classType, String methodName, Class... parametersType)  {
         Method metodo = null;
         try {
@@ -30,7 +72,7 @@ public class ReflectionManager {
 
         return metodo;
     }
-    */
+
     /**
      *
      * @param instance
@@ -40,12 +82,10 @@ public class ReflectionManager {
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-    /*
     public static Object getMethodValue(Object instance, Method method, Object... args)
             throws InvocationTargetException, IllegalAccessException {
         return method.invoke(instance, args);
     }
-    */
 
     /**
      * Retrieve a value from a property using
@@ -56,7 +96,6 @@ public class ReflectionManager {
      *  not found or b) if the property is found but the value is null
      * @return THe value of the property
      */
-    /*
     public static <T> T getProperty(Object obj, String property, T defaultValue) {
 
         T returnValue = (T) getProperty(obj, property);
@@ -66,7 +105,6 @@ public class ReflectionManager {
 
         return returnValue;
     }
-    */
 
     /**
      * Fetch a property from an object. For example of you wanted to get the foo
@@ -76,7 +114,6 @@ public class ReflectionManager {
      * @param property The property name
      * @return The value of the property or null if it does not exist.
      */
-    /*
     public static Object getProperty(Object obj, String property) {
         Object returnValue = null;
 
@@ -93,6 +130,7 @@ public class ReflectionManager {
         return returnValue;
     }
 
+    /*
     public static void main(String[] args) throws InvocationTargetException, IllegalAccessException {
         Empleado empleado = new Empleado();
         empleado.setId(4);
