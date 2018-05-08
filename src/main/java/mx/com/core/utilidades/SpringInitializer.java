@@ -7,7 +7,7 @@ public class SpringInitializer {
     private static ApplicationContext context;
 
     static {
-    	context = new ClassPathXmlApplicationContext("config/spring/demonio-configuracion.xml");
+    	context = new ClassPathXmlApplicationContext("config/spring/config.xml");
     }
 
     public static ApplicationContext getApplicationContext() {
