@@ -88,6 +88,13 @@
 			<version>3.7</version>
 		</dependency>
 
+		<!-- DataBase Pool -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+
 		<!-- Mysql -->
 		<dependency>
 			<groupId>mysql</groupId>

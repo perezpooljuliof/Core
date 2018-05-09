@@ -5,13 +5,18 @@ import mx.com.core.db.ParamType;
 import mx.com.core.db.Parameter;
 import mx.com.core.db.StoreProcedure;
 import mx.com.core.utilidades.ReflectionManager;
+import mx.com.core.utilidades.SpringInitializer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DAO {
+    private JdbcTemplate template = SpringInitializer.getApplicationContext().getBean(JdbcTemplate.class);
+
     public String getProcedureCall(Object storeProcedure) {
         StringBuilder call = new StringBuilder("CALL ");
         Class clazz = storeProcedure.getClass();
@@ -25,18 +30,18 @@ public class DAO {
             }
         }
 
-        List<Field> fileds = ReflectionManager.getFields(storeProcedure);
-        for (Field field : fileds) {
+        List<Field> fields = ReflectionManager.getFields(storeProcedure);
+        for (Field field : fields) {
             try {
                 String fieldValue = getParameterValue(storeProcedure, field);
                 if(!StringUtils.isEmpty(fieldValue)) {
-                    call.append(fieldValue).append(", ");
+                    call.append(fieldValue).append(",");
                 }
             }
             catch(Exception e) { }
         }
 
-        call.delete(call.toString().length() - 3, call.toString().length() - 1).append(")");
+        call.deleteCharAt(call.toString().length() - 1).append(")");
 
         return call.toString();
     }
@@ -68,20 +73,76 @@ public class DAO {
         return null;
     }
 
-    /*
-    public void execute(JdbcTemplate template, Object storeProcedure) {
-        String query = getProcedureCall(storeProcedure);
-        template.call(query);
+    private <T> Object getResult(Map<String, Object> row,Class<T> clazz) throws IllegalAccessException, InstantiationException {
+        T instancia = clazz.newInstance();
+
+        List<Field> fields = ReflectionManager.getFields(clazz);
+        for (Field field : fields) {
+            try {
+                setFieldValue(row, instancia, field);
+            }
+            catch(Exception e) { }
+        }
+
+        return instancia;
     }
-    */
+
+    private void setFieldValue(Map<String, Object> row, Object instancia, Field field) throws IllegalAccessException {
+        field.setAccessible(true);
+        if (field.isAnnotationPresent(Parameter.class)) {
+            Parameter pAnnotation = field.getAnnotation(Parameter.class);
+            ParamAccess access = pAnnotation.access();
+            ParamType type = pAnnotation.type();
+            String name = pAnnotation.name();
+            Object fieldValue = row.get(name);
+
+            switch (type) {
+                case INT:
+                    field.set(instancia, fieldValue);
+                    break;
+                case DOUBLE:
+                    field.set(instancia, fieldValue);
+                    break;
+                default:
+                    field.set(instancia, fieldValue.toString());
+                    break;
+            }
+
+        }
+    }
+
+    public List execute(Object storeProcedure) throws InstantiationException, IllegalAccessException {
+        String query = getProcedureCall(storeProcedure);
+        System.out.println(query);
+        List<Map<String, Object>> rows = template.queryForList(query);
+        List resultados = new ArrayList();
+        for (Map row : rows) {
+            Object result = getResult(row, storeProcedure.getClass());
+            resultados.add(result);
+        }
+
+        return resultados;
+    }
+
 
     public static void main(String[] args) {
-        Usuario usuario = new Usuario();
-        usuario.setNombre("mi nombre");
-        usuario.setEdad(32);
+        UsuarioLis usuarioLis = new UsuarioLis();
+        usuarioLis.setAutoID(0);
+        usuarioLis.setUserID(0);
+        usuarioLis.setUserPass("");
+        usuarioLis.setFirstName("");
+        usuarioLis.setLastName("");
 
-        DAO dao = new DAO();
-        String call = dao.getProcedureCall(usuario);
-        System.out.println(call);
+        try {
+            DAO dao = new DAO();
+            List<UsuarioLis> resultados = (List<UsuarioLis>) dao.execute(usuarioLis);
+            for(UsuarioLis usuario: resultados) {
+                System.out.println("usuario:" + usuario.getFirstName() + usuario.getUserID());
+            }
+        }
+        catch (Exception e) {
+
+        }
+
     }
 }
