@@ -3,7 +3,7 @@ package mx.com.core.entity;
 import mx.com.core.db.ParamAccess;
 import mx.com.core.db.ParamType;
 import mx.com.core.db.Parameter;
-import mx.com.core.db.StoreProcedure;
+import mx.com.core.db.StoredProcedure;
 import mx.com.core.utilidades.ReflectionManager;
 import mx.com.core.utilidades.SpringInitializer;
 import org.apache.commons.lang3.StringUtils;
@@ -17,19 +17,26 @@ import java.util.Map;
 public class DAO {
     private JdbcTemplate template = SpringInitializer.getApplicationContext().getBean(JdbcTemplate.class);
 
+    /**
+     * Funcion principal para obtener el llamado a un SP a partir de un bean.
+     *
+     * @param storeProcedure
+     * @return
+     */
     public String getProcedureCall(Object storeProcedure) {
         StringBuilder call = new StringBuilder("CALL ");
+        //Agregamos el nombre del SP
         Class clazz = storeProcedure.getClass();
-        if (storeProcedure.getClass().isAnnotationPresent(StoreProcedure.class)) {
-            StoreProcedure spAnnotation = storeProcedure.getClass().getAnnotation(StoreProcedure.class);
-            if("".equals(spAnnotation.name())) {
-                call.append(clazz.getSimpleName()).append("(");
-            }
-            else {
-                call.append(spAnnotation.name()).append("(");
+        String spName = clazz.getSimpleName();
+        if (storeProcedure.getClass().isAnnotationPresent(StoredProcedure.class)) {
+            StoredProcedure spAnnotation = storeProcedure.getClass().getAnnotation(StoredProcedure.class);
+            if(!"".equals(spAnnotation.name())) {
+                spName = spAnnotation.name();
             }
         }
+        call.append(spName).append("(");
 
+        //Agregamos los parametros
         List<Field> fields = ReflectionManager.getFields(storeProcedure);
         for (Field field : fields) {
             try {
@@ -46,6 +53,14 @@ public class DAO {
         return call.toString();
     }
 
+    /**
+     * Funcion para obtener el valor de un resultset a partir del nombre del campo.
+     *
+     * @param storeProcedure
+     * @param field
+     * @return
+     * @throws IllegalAccessException
+     */
     private String getParameterValue(Object storeProcedure, Field field) throws IllegalAccessException {
         StringBuilder sb = null;
 
@@ -111,6 +126,14 @@ public class DAO {
         }
     }
 
+    /**
+     * Funcion principal para ejecutar un Stored Procedure dinamico a la Base de datos
+     *
+     * @param storeProcedure
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     public List execute(Object storeProcedure) throws InstantiationException, IllegalAccessException {
         String query = getProcedureCall(storeProcedure);
         System.out.println(query);

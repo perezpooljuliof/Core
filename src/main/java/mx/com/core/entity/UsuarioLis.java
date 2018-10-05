@@ -2,9 +2,9 @@ package mx.com.core.entity;
 
 import mx.com.core.db.ParamType;
 import mx.com.core.db.Parameter;
-import mx.com.core.db.StoreProcedure;
+import mx.com.core.db.StoredProcedure;
 
-@StoreProcedure(name = "USERSLIS")
+@StoredProcedure(name = "USERSLIS")
 public class UsuarioLis {
     @Parameter(name = "AUTO_ID", type = ParamType.INT)
     private int autoID;
