@@ -40,18 +40,56 @@ public class ReflectionManager {
         return getMethod(classType, methodName, parametersType);
     }
 
+    /**
+     * Funcion para obtener las anotaciones correspondientes a la clase del objeto.
+     *
+     * @param object
+     * @return
+     */
     public static Annotation[] getAnnotations(Object object) {
         Class clazz = object.getClass();
         return getAnnotations(clazz);
     }
 
+    /**
+     * Funcion para obtener las anotaciones de una clase.
+     *
+     * @param clazz
+     * @return
+     */
     public static Annotation[] getAnnotations(Class clazz) {
         Annotation[] annotations = clazz.getAnnotations();
         return annotations;
     }
 
+    /**
+     * Funcion para obtener las anotaciones de una variable.
+     *
+     * @param field
+     * @return
+     */
+    public static Annotation[] getAnnotations(Field field) {
+        Annotation[] annotations = field.getDeclaredAnnotations();
+        return annotations;
+    }
+
+    public static boolean isAnnotationPresent(Field field, Class clazz) {
+        return field.isAnnotationPresent(clazz);
+    }
+
     public static Annotation getAnnotation(Class clazz, Class annotationClass) {
         return clazz.getAnnotation(annotationClass);
+    }
+
+    /**
+     * Funcion para devolver la anotacion de una variable.
+     * Devuelve la referencia de la anotacion.
+     * @param field
+     * @param annotationClass
+     * @return
+     */
+    public static Object getAnnotation(Field field, Class annotationClass) {
+        return field.getAnnotation(annotationClass);
     }
 
     /**

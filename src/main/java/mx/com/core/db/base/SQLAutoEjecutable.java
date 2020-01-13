@@ -1,4 +1,4 @@
-package mx.com.core.db;
+package mx.com.core.db.base;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -14,7 +14,7 @@ public interface SQLAutoEjecutable {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public <T> List<T> getList(Object storedProcedure,Class<T> clazz) throws InstantiationException, IllegalAccessException;
+    public <T> List<T> getList(TipoLlamada tipoLlamada, Object storedProcedure, Class<T> clazz) throws InstantiationException, IllegalAccessException;
 
     /**
      * Funcion principal para ejecutar un Stored Procedure dinamico a la Base de datos
@@ -25,7 +25,7 @@ public interface SQLAutoEjecutable {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public <T> T getResult(Object storedProcedure, Class<T> clazz) throws IllegalAccessException, InstantiationException;
+    public <T> T getResult(TipoLlamada tipoLlamada, Object storedProcedure, Class<T> clazz) throws IllegalAccessException, InstantiationException;
 
     /**
      * Funcion para establecer el JdbcTemplate
