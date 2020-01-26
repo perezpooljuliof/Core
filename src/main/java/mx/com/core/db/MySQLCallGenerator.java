@@ -1,9 +1,11 @@
 package mx.com.core.db;
 
 import mx.com.core.db.base.SQLAutoEjecutable;
+import mx.com.core.db.param.ParamAccess;
 import mx.com.core.db.param.ParamType;
 import mx.com.core.db.param.Parameter;
 import mx.com.core.db.base.TipoLlamada;
+import mx.com.core.utilidades.MapSqlParameterSourceImpl;
 import mx.com.core.utilidades.ReflectionManager;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -90,12 +92,15 @@ public class MySQLCallGenerator implements SQLAutoEjecutable {
         //Obtenemos el valor del parametro
         Object value = field.get(storeProcedure);
 
+        //Obtenemos el tipo de acceso el parametro
+        ParamAccess access = parameterAnnotation.access();
 
         parameterBean = new ParameterBean();
         parameterBean.setName(parameterName);
         parameterBean.setValue(value);
         parameterBean.setTypeName(paramType!=null?paramType.getName():"");
         parameterBean.setType(paramType!=null?paramType.getType():0);
+        parameterBean.setAccess(access);
         return parameterBean;
     }
 
@@ -105,8 +110,8 @@ public class MySQLCallGenerator implements SQLAutoEjecutable {
      * @return
      * @throws IllegalAccessException
      */
-    private SqlParameterSource getJdbcParameterSource(TipoLlamada tipoLlamada, Object storeProcedure) throws IllegalAccessException {
-        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+    private MapSqlParameterSourceImpl getJdbcParameterSource(TipoLlamada tipoLlamada, Object storeProcedure) throws IllegalAccessException {
+        MapSqlParameterSourceImpl sqlParameterSource = new MapSqlParameterSourceImpl();
         List<Field> fields = ReflectionManager.getFields(storeProcedure);
 
         for(Field field: fields) {
@@ -130,7 +135,8 @@ public class MySQLCallGenerator implements SQLAutoEjecutable {
             }
 
             ParameterBean parameterBean = getJdbcParameter(storeProcedure, field);
-            sqlParameterSource.addValue(parameterBean.getName(), parameterBean.getValue());
+            sqlParameterSource.addValue(parameterBean);
+            //sqlParameterSource.addValue(parameterBean.getName(), parameterBean.getValue());
         }
 
         return sqlParameterSource;
@@ -143,7 +149,7 @@ public class MySQLCallGenerator implements SQLAutoEjecutable {
      * @param in
      * @return
      */
-    private String jdbcCallToString(SimpleJdbcCall simpleJdbcCall, SqlParameterSource in) {
+    private String jdbcCallToString(SimpleJdbcCall simpleJdbcCall, MapSqlParameterSourceImpl in) {
         String nombreSP = simpleJdbcCall.getProcedureName();
         StringBuilder sqlStringBuilder = new StringBuilder();
 
@@ -152,8 +158,13 @@ public class MySQLCallGenerator implements SQLAutoEjecutable {
 
         for(String parameterName: in.getParameterNames()) {
             Object value = in.getValue(parameterName);
-            String typeName = in.getTypeName(parameterName);
-            int type = in.getSqlType(parameterName);
+            ParameterBean parameterConfig = (ParameterBean) in.getParameter(parameterName);
+
+            if(parameterConfig.getAccess()==ParamAccess.OUT || parameterConfig.getAccess()==ParamAccess.INOUT) {
+                sqlStringBuilder.append("@").append(parameterName).append(",");
+                continue;
+            }
+
             if(value==null) {
                 sqlStringBuilder.append("NULL").append(",");
             }
@@ -171,7 +182,7 @@ public class MySQLCallGenerator implements SQLAutoEjecutable {
 
     private List<Map<String, Object>> execute(TipoLlamada tipoLlamada, Object storedProcedure) throws InstantiationException, IllegalAccessException {
         SimpleJdbcCall simpleJdbcCall = getJdbcCall(tipoLlamada, storedProcedure);
-        SqlParameterSource in = getJdbcParameterSource(tipoLlamada, storedProcedure);
+        MapSqlParameterSourceImpl in = getJdbcParameterSource(tipoLlamada, storedProcedure);
         System.out.println(jdbcCallToString(simpleJdbcCall, in));
         Map<String, Object> out = simpleJdbcCall.execute(in);
         simpleJdbcCall.withReturnValue();

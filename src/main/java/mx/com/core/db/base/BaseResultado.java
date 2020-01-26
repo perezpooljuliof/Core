@@ -7,6 +7,7 @@ public class BaseResultado extends BaseStore {
     private String mostrarResultado;
     private String numResultado;
     private String resultado;
+    private String consecutivo;
 
     public String getMostrarResultado() {
         return mostrarResultado;
@@ -27,5 +28,12 @@ public class BaseResultado extends BaseStore {
     }
     public void setResultado(String resultado) {
         this.resultado = resultado;
+    }
+
+    public String getConsecutivo() {
+        return consecutivo;
+    }
+    public void setConsecutivo(String consecutivo) {
+        this.consecutivo = consecutivo;
     }
 }

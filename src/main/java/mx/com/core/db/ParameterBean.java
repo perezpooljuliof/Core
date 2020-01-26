@@ -1,10 +1,13 @@
 package mx.com.core.db;
 
+import mx.com.core.db.param.ParamAccess;
+
 public class ParameterBean {
     private String name;
     private Object value;
     private int type;
     private String typeName;
+    private ParamAccess access;
 
 
     public String getName() {
@@ -37,5 +40,13 @@ public class ParameterBean {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
+    }
+
+    public ParamAccess getAccess() {
+        return access;
+    }
+
+    public void setAccess(ParamAccess access) {
+        this.access = access;
     }
 }

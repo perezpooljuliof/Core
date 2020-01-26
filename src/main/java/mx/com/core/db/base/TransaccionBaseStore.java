@@ -13,7 +13,8 @@ public class TransaccionBaseStore extends BaseStore {
     protected int numResultado;
     @Parameter(type = ParamType.VARCHAR, access = ParamAccess.INOUT)
     protected String resultado;
-
+    @Parameter(type = ParamType.VARCHAR, access = ParamAccess.INOUT)
+    protected long consecutivo;
 
     public String getMostrarResultado() {
         return mostrarResultado;
@@ -34,5 +35,12 @@ public class TransaccionBaseStore extends BaseStore {
     }
     public void setResultado(String resultado) {
         this.resultado = resultado;
+    }
+
+    public long getConsecutivo() {
+        return consecutivo;
+    }
+    public void setConsecutivo(long consecutivo) {
+        this.consecutivo = consecutivo;
     }
 }

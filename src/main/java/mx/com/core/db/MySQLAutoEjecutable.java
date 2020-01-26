@@ -5,14 +5,9 @@ import mx.com.core.utilidades.LongUtils;
 
 public class MySQLAutoEjecutable {
     private MySQLCallGenerator mySQLCallGenerator;
-    private LongUtils longUtils;
 
-    public <T> T alta(Object storedProcedure, Class<T> clazz) throws InstantiationException, IllegalAccessException {
-        return mySQLCallGenerator.getResult(TipoLlamada.ALTA, storedProcedure, clazz);
-    }
-
-    public Long generateUniqueID() {
-        return longUtils.generateUniqueID();
+    public <T> T alta(Object bean, Class<T> resultClazz) throws InstantiationException, IllegalAccessException {
+        return mySQLCallGenerator.getResult(TipoLlamada.ALTA, bean, resultClazz);
     }
 
     public MySQLCallGenerator getMySQLCallGenerator() {
@@ -20,12 +15,5 @@ public class MySQLAutoEjecutable {
     }
     public void setMySQLCallGenerator(MySQLCallGenerator mySQLCallGenerator) {
         this.mySQLCallGenerator = mySQLCallGenerator;
-    }
-
-    public LongUtils getLongUtils() {
-        return longUtils;
-    }
-    public void setLongUtils(LongUtils longUtils) {
-        this.longUtils = longUtils;
     }
 }
